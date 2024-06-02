@@ -1,0 +1,6 @@
+@VisualEditorAPI_HostAddress = http://localhost:5254
+
+GET {{VisualEditorAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
