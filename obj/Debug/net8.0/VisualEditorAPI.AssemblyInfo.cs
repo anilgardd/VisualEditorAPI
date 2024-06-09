@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("VisualEditorAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+40a57c1f62e46d43db5c4c6c4c0ee1b991da6578")]
 [assembly: System.Reflection.AssemblyProductAttribute("VisualEditorAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("VisualEditorAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,3 +1,4 @@
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using VisualEditorAPI.Data;
@@ -61,6 +62,32 @@ namespace VisualEditorAPI.Controllers
                 return NotFound("Design not found.");
             }
 
+            var response = GenerateReactComponentResponse(design);
+
+            return Ok(response);
+        }
+        
+        [HttpGet]
+        [Route("GetDesignsByUser/{userId}")]
+        public async Task<IActionResult> GetDesignsByUser(int userId)
+        {
+            var designs = await _context.Designs
+                .Where(d => d.UserId == userId)
+                .Include(d => d.Components)
+                .ToListAsync();
+
+            if (designs == null || !designs.Any())
+            {
+                return NotFound("No designs found for the given user.");
+            }
+
+            var responses = designs.Select(design => GenerateReactComponentResponse(design)).ToList();
+
+            return Ok(responses);
+        }
+
+        private object GenerateReactComponentResponse(Design design)
+        {
             var sb = new StringBuilder();
             var cssSb = new StringBuilder();
 
@@ -92,23 +119,7 @@ namespace VisualEditorAPI.Controllers
                 Css = cssSb.ToString()
             };
 
-            return Ok(response);
-        }
-        [HttpGet]
-        [Route("GetDesignsByUser/{userId}")]
-        public async Task<IActionResult> GetDesignsByUser(int userId)
-        {
-            var designs = await _context.Designs
-                .Where(d => d.UserId == userId)
-                .Include(d => d.Components)
-                .ToListAsync();
-
-            if (designs == null || !designs.Any())
-            {
-                return NotFound("No designs found for the given user.");
-            }
-
-            return Ok(designs);
+            return response;
         }
 
         private string GenerateStyles(CanvasObjectDto component)
@@ -141,10 +152,10 @@ namespace VisualEditorAPI.Controllers
                     html = $"<div className=\"{component.ObjectId}\"></div>";
                     break;
                 case "circle":
-                    html = $"<div className=\"{component.ObjectId}\" style=\"border-radius: 50%;\"></div>";
+                    html = $"<div className=\"{component.ObjectId}\" style={{{{ borderRadius: '50%' }}}}</div>";
                     break;
                 case "triangle":
-                    html = $"<div className=\"{component.ObjectId}\" style=\"width: 0; height: 0; border-left: {component.Width / 2}px solid transparent; border-right: {component.Width / 2}px solid transparent; border-bottom: {component.Height}px solid {component.Fill};\"></div>";
+                    html = $"<div className=\"{component.ObjectId}\" style={{{{ width: 0; height: 0; border-left: {component.Width / 2}px solid transparent; border-right: {component.Width / 2}px solid transparent; border-bottom: {component.Height}px solid {component.Fill}}}}}></div>";
                     break;
                 case "line":
                     html = $"<div className=\"{component.ObjectId}\" style=\"border-top: {component.StrokeWidth}px solid {component.Stroke}; width: {component.Width}px;\"></div>";
@@ -176,7 +187,6 @@ public class CanvasObjectsDto
 {
     public Dictionary<string, CanvasObjectDto> Data { get; set; } = new Dictionary<string, CanvasObjectDto>();
 }
-
 public class CanvasObjectDto
 {
     public string Type { get; set; } = string.Empty;
